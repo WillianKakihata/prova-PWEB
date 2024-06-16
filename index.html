@@ -8,13 +8,25 @@
 </head>
 <body>
   <header>
-    <form>
+    <form id="search-form">
       <div id="search-container">
-        <input id="pesquisa" type="text" name="search" placeholder="Search..." >
-        <button type="submit"><input type="submit" value="🔍" ></button>
+        <input id="pesquisa" type="text" name="search" placeholder="Search...">
+        <button id="busca" type="submit">🔍</button>
       </div>
     </form>
+    <div id="filter-icon-container">
+      <svg id="filter-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 13 10 21 14 21 14 13 22 3"></polygon></svg>
+      <span id="filter-count"></span>
+    </div>
   </header>
+  
+  <dialog id="filter-dialog">
+    <form method="dialog">
+      <h2>Filter Options</h2>
+      <!-- Add your filter inputs here -->
+      <button id="close-dialog">Close</button>
+    </form>
+  </dialog>
   
   <main>
     <div class="content">
@@ -26,5 +38,7 @@
   <footer>
     <p>Footer Content</p>
   </footer>
+
+  <script src="index.js"></script>
 </body>
 </html>
