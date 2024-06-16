@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyFiltersButton = document.getElementById('apply-filters');
     const searchInput = document.getElementById('pesquisa');
     const filterForm = document.getElementById('filter-form');
+    const noticiasContainer = document.getElementById('noticias-container');
+    const tipoInput = document.getElementById('tipo');
+    const quantidadeSelect = document.getElementById('quantidade');
+    const deInput = document.getElementById('de');
+    const ateInput = document.getElementById('ate');
     const urlParams = new URLSearchParams(window.location.search);
   
     // Mostrar o modal quando o ícone de filtro for clicado
@@ -35,11 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   
     // Preencher os inputs de filtro se eles existirem na query string
-    const tipoInput = document.getElementById('tipo');
-    const quantidadeSelect = document.getElementById('quantidade');
-    const deInput = document.getElementById('de');
-    const ateInput = document.getElementById('ate');
-  
     if (urlParams.has('tipo')) {
       tipoInput.value = urlParams.get('tipo');
     }
@@ -51,6 +51,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (urlParams.has('ate')) {
       ateInput.value = urlParams.get('ate');
+    }
+  
+    // Função para buscar notícias da API do IBGE
+    async function fetchNoticias() {
+      const queryParams = new URLSearchParams();
+  
+      if (searchInput.value) queryParams.append('busca', searchInput.value);
+      if (tipoInput.value) queryParams.append('tipo', tipoInput.value);
+      if (quantidadeSelect.value) queryParams.append('quantidade', quantidadeSelect.value);
+      if (deInput.value) queryParams.append('de', deInput.value);
+      if (ateInput.value) queryParams.append('ate', ateInput.value);
+  
+      const url = `https://servicodados.ibge.gov.br/api/v3/noticias?${queryParams.toString()}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const noticias = await response.json();
+        displayNoticias(noticias);
+      } catch (error) {
+        console.error('Failed to fetch noticias:', error);
+      }
+    }
+  
+    // Função para exibir as notícias no HTML
+    function displayNoticias(noticias) {
+      noticiasContainer.innerHTML = '';
+      noticias.items.forEach(noticia => {
+        const noticiaElement = document.createElement('div');
+        noticiaElement.className = 'noticia';
+        noticiaElement.innerHTML = `
+          <h2>${noticia.titulo}</h2>
+          <p>${noticia.introducao}</p>
+          <a href="${noticia.link}" target="_blank">Leia mais</a>
+        `;
+        noticiasContainer.appendChild(noticiaElement);
+      });
     }
   
     // Atualizar a query string e os dados quando os filtros forem aplicados
@@ -67,11 +105,34 @@ document.addEventListener('DOMContentLoaded', () => {
       // Atualizar a URL com a nova query string
       window.history.pushState({}, '', `${window.location.pathname}?${newParams}`);
   
-      // Fechar o modal
+      // Fechar o dialog
       filterDialog.close();
   
-      // Simular a atualização dos dados com base nos novos filtros (substituir com a lógica real de busca de dados)
-      console.log('Novos filtros aplicados:', Object.fromEntries(newParams));
+      // Buscar notícias com os novos filtros
+      fetchNoticias();
     });
+  
+    // Preencher o input de "Tipo" com valores possíveis da API
+    async function fetchTipos() {
+      try {
+        const response = await fetch('https://servicodados.ibge.gov.br/api/docs/noticias?versao=3');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const tipos = await response.json();
+        tipos.forEach(tipo => {
+          const option = document.createElement('option');
+          option.value = tipo;
+          option.textContent = tipo;
+          tipoInput.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Failed to fetch tipos:', error);
+      }
+    }
+  
+    // Inicializar a página carregando os tipos e as notícias
+    fetchTipos();
+    fetchNoticias();
   });
   
