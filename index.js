@@ -1,27 +1,76 @@
-async function fetchNoticias() {
+// Função para buscar notícias da API do IBGE
+async function fetchNoticias(page = 1) {
   try {
-    searchInput = document.getElementById('pesquisa'); // Definir searchInput aqui
-    const queryParams = new URLSearchParams();
+    const searchInput = document.getElementById('pesquisa');
+    const tipoInput = document.getElementById('tipo');
+    const quantidadeSelect = document.getElementById('quantidade');
+    const deInput = document.getElementById('de');
+    const ateInput = document.getElementById('ate');
 
+    const queryParams = new URLSearchParams();
     if (searchInput.value) queryParams.append('busca', searchInput.value);
     if (tipoInput.value) queryParams.append('tipo', tipoInput.value);
     if (quantidadeSelect.value) queryParams.append('quantidade', quantidadeSelect.value);
     if (deInput.value) queryParams.append('de', deInput.value);
     if (ateInput.value) queryParams.append('ate', ateInput.value);
+    queryParams.append('page', page); // Adicionar página à query string
 
     const url = `https://servicodados.ibge.gov.br/api/v3/noticias?${queryParams.toString()}`;
     const response = await fetch(url);
+
     if (!response.ok) {
       throw new Error(`Erro ao buscar notícias: ${response.status} ${response.statusText}`);
     }
+
     const noticias = await response.json();
-    // Chamar a função displayNoticias após receber os dados
     displayNoticias(noticias);
+    createPaginationButtons(page, noticias.total_pages); // Atualiza os botões de paginação com base no total de páginas
+
   } catch (error) {
     console.error('Erro ao buscar notícias:', error.message);
     // Aqui você pode adicionar uma mensagem de erro na interface, se necessário
   }
 }
+
+// Função para criar os botões de páginação
+function createPaginationButtons(currentPage, totalPages) {
+  const paginationList = document.querySelector('.pagination-list');
+  paginationList.innerHTML = ''; // Limpa os botões existentes
+
+  const maxVisibleButtons = 10;
+  const halfMaxVisibleButtons = Math.floor(maxVisibleButtons / 2);
+
+  let startPage = currentPage - halfMaxVisibleButtons;
+  startPage = Math.max(startPage, 1); // Garante que não seja menor que a página 1
+
+  let endPage = startPage + maxVisibleButtons - 1;
+  endPage = Math.min(endPage, totalPages); // Garante que não ultrapasse o total de páginas
+
+  for (let page = startPage; page <= endPage; page++) {
+    const button = document.createElement('button');
+    button.textContent = page;
+    button.classList.add('pagination-button');
+    
+    if (page === currentPage) {
+      button.classList.add('current-page');
+    }
+
+    button.addEventListener('click', () => {
+      fetchNoticias(page); // Busca as notícias da página clicada
+      updateQueryString(page); // Atualiza a query string com a página selecionada
+    });
+
+    paginationList.appendChild(button);
+  }
+}
+
+// Função para atualizar a query string da URL
+function updateQueryString(page) {
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('page', page);
+  window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+}
+
 
 // Função para exibir as notícias no HTML
 function displayNoticias(noticias) {
@@ -262,9 +311,10 @@ function displayNoticias(noticias) {
     fetchNoticias();
   });
 
-  
   // Preencher o input de "Tipo" com valores possíveis da API
   fetchTipos();
   fetchNoticias();
 });
+
+
 

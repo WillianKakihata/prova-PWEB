@@ -112,3 +112,28 @@ dialog {
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
+ul {
+  list-style-type: none;
+  padding-left: 0; /* Remove o espaçamento padrão à esquerda */
+}
+
+/* Estilo base para a grid */
+.content {
+  display: grid;
+  gap: 20px;
+}
+
+/* Configuração para resoluções maiores que 760px */
+@media (min-width: 760px) {
+  .content {
+    grid-template-columns: repeat(2, 1fr); /* Duas colunas */
+  }
+}
+
+/* Configuração para resoluções menores que 760px */
+@media (max-width: 759px) {
+  .content {
+    grid-template-columns: 1fr; /* Uma coluna */
+  }
+}

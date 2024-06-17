@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grid Page</title>
+  <title>Portal de Notícias do IBGE</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
+    <h1>Portal de Notícias do IBGE</h1>
     <form id="search-form">
       <div id="search-container">
-        <input id="pesquisa" type="text" name="search" placeholder="Search...">
+        <input id="pesquisa" type="text" name="search" placeholder="Pesquisar...">
         <button id="busca" type="submit">🔍</button>
       </div>
     </form>
@@ -22,7 +23,7 @@
   
   <dialog id="filter-dialog">
     <form id="filter-form" method="dialog">
-      <h2>Filter Options</h2>
+      <h2>Opções de Filtro</h2>
       <label for="tipo">Tipo:</label>
       <input type="text" id="tipo" name="tipo">
       
@@ -46,16 +47,23 @@
   </dialog>
   
   <main>
-    <div class="content">
-      <h1>Notícias</h1>
-      <div id="noticias-container">
-       
+    <div id="noticias-container" class="content">
+      <!-- Aqui serão exibidas as notícias -->
+      <ul id="noticias-list" class="noticias-list">
+        <!-- Os itens de notícias serão adicionados dinamicamente aqui -->
+      </ul>
+      
+      <!-- Botões de paginação -->
+      <div id="pagination-container">
+        <ul id="pagination-list" class="pagination-list">
+          <!-- Os botões de páginação serão adicionados dinamicamente aqui -->
+        </ul>
       </div>
     </div>
   </main>
 
   <footer>
-    <p>Footer Content</p>
+    <p>© Prova do segundo bimestre - Programação WEB</p>
   </footer>
 
   <script src="index.js"></script>
